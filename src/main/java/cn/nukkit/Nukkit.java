@@ -29,7 +29,7 @@ public class Nukkit {
 
     public final static String VERSION = "1.0.0";
     public final static String API_VERSION = "1.0.0";
-    public final static String CODENAME = "<TEST>";
+    public final static String CODENAME = "Carrot";
     @Deprecated
     public final static String[] MINECRAFT_VERSION = ProtocolInfo.MINECRAFT_VERSION;
     @Deprecated
