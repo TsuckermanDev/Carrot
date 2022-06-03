@@ -27,9 +27,9 @@ import java.util.stream.Collectors;
  */
 public class Nukkit {
 
-    public final static String VERSION = "1.0.0";
+    public final static String VERSION = "1.0.1";
     public final static String API_VERSION = "1.0.0";
-    public final static String CODENAME = "Carrot";
+    public final static String CODENAME = "dev";
     @Deprecated
     public final static String[] MINECRAFT_VERSION = ProtocolInfo.MINECRAFT_VERSION;
     @Deprecated
@@ -92,7 +92,7 @@ public class Nukkit {
 
         try {
             if (ANSI) {
-                System.out.print((char) 0x1b + "]0;Starting Nukkit Server For Minecraft: PE" + (char) 0x07);
+                System.out.print((char) 0x1b + "]0;Starting Carrot Server For Minecraft: PE" + (char) 0x07);
             }
             new Server(logger, PATH, DATA_PATH, PLUGIN_PATH);
         } catch (Exception e) {

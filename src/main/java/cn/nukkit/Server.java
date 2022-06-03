@@ -222,7 +222,7 @@ public class Server {
         this.console = new CommandReader();
         //todo: VersionString 现在不必要
 
-        if (!new File(this.dataPath + "nukkit.yml").exists()) {
+        if (!new File(this.dataPath + "carrot.yml").exists()) {
             this.getLogger().info(TextFormat.GREEN + "Welcome! Please choose a language first!");
             try {
                 String[] lines = Utils.readFile(this.getClass().getClassLoader().getResourceAsStream("lang/language.list")).split("\n");
@@ -243,13 +243,13 @@ public class Server {
                 }
             }
 
-            InputStream advacedConf = this.getClass().getClassLoader().getResourceAsStream("lang/" + language + "/nukkit.yml");
+            InputStream advacedConf = this.getClass().getClassLoader().getResourceAsStream("lang/" + language + "/carrot.yml");
             if (advacedConf == null) {
-                advacedConf = this.getClass().getClassLoader().getResourceAsStream("lang/" + fallback + "/nukkit.yml");
+                advacedConf = this.getClass().getClassLoader().getResourceAsStream("lang/" + fallback + "/carrot.yml");
             }
 
             try {
-                Utils.writeFile(this.dataPath + "nukkit.yml", advacedConf);
+                Utils.writeFile(this.dataPath + "carrot.yml", advacedConf);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -258,13 +258,13 @@ public class Server {
 
         this.console.start();
 
-        this.logger.info("Loading " + TextFormat.GREEN + "nukkit.yml" + TextFormat.WHITE + "...");
-        this.config = new Config(this.dataPath + "nukkit.yml", Config.YAML);
+        this.logger.info("Loading " + TextFormat.GREEN + "carrot.yml" + TextFormat.WHITE + "...");
+        this.config = new Config(this.dataPath + "carrot.yml", Config.YAML);
 
         this.logger.info("Loading " + TextFormat.GREEN + "server properties" + TextFormat.WHITE + "...");
         this.properties = new Config(this.dataPath + "server.properties", Config.PROPERTIES, new ConfigSection() {
             {
-                put("motd", "Nukkit Server For Minecraft: PE");
+                put("motd", "Carrot Server For Minecraft: PE");
                 put("server-port", 19132);
                 put("server-ip", "0.0.0.0");
                 put("view-distance", 10);
@@ -1100,7 +1100,7 @@ public class Server {
     }
 
     public String getName() {
-        return "Nukkit";
+        return "Carrot";
     }
 
     public boolean isRunning() {
@@ -1276,7 +1276,7 @@ public class Server {
     }
 
     public String getMotd() {
-        return this.getPropertyString("motd", "Nukkit Server For Minecraft: PE");
+        return this.getPropertyString("motd", "Carrot Server For Minecraft: PE");
     }
 
     public boolean getForceResources() {
