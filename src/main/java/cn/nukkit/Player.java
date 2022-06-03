@@ -2983,7 +2983,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         break;
                     }
 
-                   this.sendMessage("item: " + dropItem.item); this.getTransactionGroup().addTransaction(new DropItemTransaction(dropItem.item));
+
                     break;
                 case ProtocolInfo.COMMAND_STEP_PACKET:
                     if (!this.spawned || !this.isAlive()) {
