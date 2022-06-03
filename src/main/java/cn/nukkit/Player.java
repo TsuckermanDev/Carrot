@@ -755,7 +755,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.sendData(this);
         this.inventory.sendContents(this);
         this.inventory.sendArmorContents(this);
-
+        this.offhandInventory.sendContents(this);
         SetTimePacket setTimePacket = new SetTimePacket();
         setTimePacket.time = this.level.getTime();
         this.dataPacket(setTimePacket);
@@ -1283,7 +1283,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 TakeItemEntityPacket packet = new TakeItemEntityPacket();
                 packet.entityId = this.id;
                 packet.target = entity.getId();
-                Server.broadcastPacket(entity.getViewers().values().toArray(Player[]::new), packet);
+                Server.broadcastPacket(entity.getViewers().values(), packet);
 
                 if (add) {
                     this.getFloatingInventory().addItem(item.clone());
@@ -1311,7 +1311,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         TakeItemEntityPacket packet = new TakeItemEntityPacket();
                         packet.entityId = this.id;
                         packet.target = entity.getId();
-                        Server.broadcastPacket(entity.getViewers().values().toArray(Player[]::new), packet);
+                        Server.broadcastPacket(entity.getViewers().values(), packet);
 
                         if (add) {
                             this.getFloatingInventory().addItem(item.clone());
@@ -1978,6 +1978,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
 
                     LoginPacket loginPacket = (LoginPacket) packet;
+                    this.getServer().getLogger().info("Protocol: " + loginPacket.getProtocol());
 
                     String message;
                     if (!Arrays.asList(ProtocolInfo.ACCEPTED_PROTOCOLS).contains(loginPacket.getProtocol())) {
@@ -2186,9 +2187,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                     MobEquipmentPacket mobEquipmentPacket = (MobEquipmentPacket) packet;
 
-                    if (mobEquipmentPacket.windowId == 119) {
-                        //ToDo: add offhand
-                    }
+        if (mobEquipmentPacket.windowId == 119) {
+            if(this.offhandInventory != null){
+                this.getTransactionGroup().addTransaction(new BaseTransaction(this.offhandInventory, 0, mobEquipmentPacket.item));
+            }
+        }
 
                     this.inventory.setHeldItemIndex(mobEquipmentPacket.selectedSlot, false, mobEquipmentPacket.slot);
                     this.setDataFlag(Player.DATA_FLAGS, Player.DATA_FLAG_ACTION, false);
@@ -2980,8 +2983,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         break;
                     }
 
-                    DropItemTransaction dropItemTransaction = new DropItemTransaction(dropItem.item);
-                    this.getTransactionGroup().addTransaction(dropItemTransaction);
+                   this.sendMessage("item: " + dropItem.item); this.getTransactionGroup().addTransaction(new DropItemTransaction(dropItem.item));
                     break;
                 case ProtocolInfo.COMMAND_STEP_PACKET:
                     if (!this.spawned || !this.isAlive()) {

@@ -18,7 +18,8 @@ public enum InventoryType {
     DISPENSER(0, "Dispenser", 6), //9 CONTAINER
     DROPPER(9, "Dropper", 7), //9 CONTAINER
     HOPPER(5, "Hopper", 8), //5 CONTAINER
-    PLAYER_FLOATING(36, "Floating", -1);
+    PLAYER_FLOATING(36, "Floating", -1),
+    OFFHAND(1, "Offhand", -1);
 
     private final int size;
     private final String title;
