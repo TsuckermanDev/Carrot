@@ -14,7 +14,6 @@ Carrot is **under improvement** yet, we welcome contributions.
 
 Build JAR file
 -------------
-- `git submodule update --init`
 - `mvn clean package`
 
 Running
