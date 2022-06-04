@@ -1978,7 +1978,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
 
                     LoginPacket loginPacket = (LoginPacket) packet;
-                    this.getServer().getLogger().info("Protocol: " + loginPacket.getProtocol());
 
                     String message;
                     if (!Arrays.asList(ProtocolInfo.ACCEPTED_PROTOCOLS).contains(loginPacket.getProtocol())) {
