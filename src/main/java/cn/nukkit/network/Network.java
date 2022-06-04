@@ -4,8 +4,6 @@ import cn.nukkit.Nukkit;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.network.protocol.*;
-import cn.nukkit.network.protocol.v201.AddEntityPacket201;
-import cn.nukkit.network.protocol.v201.ProtocolInfo201;
 import cn.nukkit.utils.Binary;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.Zlib;

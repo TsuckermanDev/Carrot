@@ -63,6 +63,7 @@ import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -1976,11 +1977,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     if (this.loggedIn) {
                         break;
                     }
-
                     LoginPacket loginPacket = (LoginPacket) packet;
 
                     String message;
-                    if (!Arrays.asList(ProtocolInfo.ACCEPTED_PROTOCOLS).contains(loginPacket.getProtocol())) {
+                    if (loginPacket.getProtocol() != ProtocolInfo.CURRENT_PROTOCOL) {
                         if (loginPacket.getProtocol() < ProtocolInfo.CURRENT_PROTOCOL) {
                             message = "disconnectionScreen.outdatedClient";
 
@@ -2063,7 +2063,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     infoPacket.resourcePackEntries = this.server.getResourcePackManager().getResourceStack();
                     infoPacket.mustAccept = this.server.getForceResources();
                     this.dataPacket(infoPacket);
-
                     break;
                 case ProtocolInfo.RESOURCE_PACK_CLIENT_RESPONSE_PACKET:
                     ResourcePackClientResponsePacket responsePacket = (ResourcePackClientResponsePacket) packet;
