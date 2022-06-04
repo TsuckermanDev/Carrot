@@ -276,7 +276,7 @@ public class Item implements Cloneable, BlockIds, ItemIds {
             list[ELYTRA] = ItemElytra.class; //444
 
             //TODO: list[SHULKER_SHELL] = ItemShulkerShell.class; //445
-
+            list[TOTEM] = ItemTotem.class; //457
             list[BEETROOT] = ItemBeetroot.class; //457
             list[BEETROOT_SEEDS] = ItemSeedsBeetroot.class; //458
             list[BEETROOT_SOUP] = ItemBeetrootSoup.class; //459

@@ -865,17 +865,9 @@ public abstract class Entity extends Location implements Metadatable {
                 Player p = (Player) this;
                 boolean totem = false;
                 if (p.getOffhandInventory().getItem(0).getId() == ItemIds.TOTEM) {
-                    EntityEventPacket pk = new EntityEventPacket();
-                    pk.eid = this.getId();
-                    pk.event = EntityEventPacket.CONSUME_TOTEM;
-                    p.dataPacket(pk);
                     p.getOffhandInventory().clear(0);
                     totem = true;
                 } else if (p.getInventory().getItemInHand().getId() == ItemIds.TOTEM) {
-                    EntityEventPacket pk = new EntityEventPacket();
-                    pk.eid = this.getId();
-                    pk.event = EntityEventPacket.CONSUME_TOTEM;
-                    p.dataPacket(pk);
                     p.getInventory().clear(p.getInventory().getHeldItemIndex());
                     totem = true;
                 }
@@ -889,6 +881,11 @@ public abstract class Entity extends Location implements Metadatable {
                     this.addEffect(Effect.getEffect(Effect.REGENERATION).setDuration(800).setAmplifier(1));
                     this.addEffect(Effect.getEffect(Effect.FIRE_RESISTANCE).setDuration(800));
                     this.addEffect(Effect.getEffect(Effect.ABSORPTION).setDuration(100).setAmplifier(1));
+
+                    EntityEventPacket pk = new EntityEventPacket();
+                    pk.eid = this.getId();
+                    pk.event = EntityEventPacket.CONSUME_TOTEM;
+                    p.dataPacket(pk);
 
                     source.setCancelled(true);
                     return false;
