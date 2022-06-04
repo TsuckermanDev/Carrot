@@ -1998,8 +1998,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     this.deviceModel = loginPacket.getDeviceModel();
                     this.deviceOS = loginPacket.getDeviceOS();
 
-                    this.getServer().getLogger().info("Device: " + this.getDeviceModel());
-
                     if (this.server.getOnlinePlayers().size() >= this.server.getMaxPlayers() && this.kick(PlayerKickEvent.Reason.SERVER_FULL, "disconnectionScreen.serverFull", false)) {
                         break;
                     }
