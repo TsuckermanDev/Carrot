@@ -759,6 +759,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         this.sendPotionEffects(this);
         this.sendData(this);
+        this.setEnableClientCommand(true);
 
         this.inventory.sendContents(this);
         this.inventory.sendArmorContents(this);
@@ -1947,8 +1948,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             containerSetContentPacket.slots = Item.getCreativeItems().stream().toArray(Item[]::new);
             this.dataPacket(containerSetContentPacket);
         }
-
-        this.setEnableClientCommand(true);
 
         this.server.sendFullPlayerListData(this);
 
