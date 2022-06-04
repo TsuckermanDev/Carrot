@@ -4,7 +4,7 @@ Carrot
 Introduction
 -------------
 
-Carrot is nuclear-powered server software for Minecraft: Pocket Edition.
+Carrot is server software for Minecraft: Pocket Edition.
 It has a few key advantages over other server software:
 
 * Written in Java, Carrot is faster and more stable.
@@ -18,7 +18,7 @@ Build JAR file
 
 Running
 -------------
-Simply run `java -jar Carrot.jar`.
+Simply run `java -jar carrot-1.0-SNAPSHOT`.
 
 Plugin API
 -------------
