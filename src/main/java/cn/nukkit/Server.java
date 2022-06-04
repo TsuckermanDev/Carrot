@@ -261,9 +261,9 @@ public class Server {
                 }
             }
 
-            InputStream advacedConf = this.getClass().getClassLoader().getResourceAsStream("lang/" + language + "/nukkit.yml");
+            InputStream advacedConf = this.getClass().getClassLoader().getResourceAsStream("lang/" + language + "/carrot.yml");
             if (advacedConf == null) {
-                advacedConf = this.getClass().getClassLoader().getResourceAsStream("lang/" + fallback + "/nukkit.yml");
+                advacedConf = this.getClass().getClassLoader().getResourceAsStream("lang/" + fallback + "/carrot.yml");
             }
 
             try {
