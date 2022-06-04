@@ -25,6 +25,9 @@ public class LoginPacket extends DataPacket {
     public UUID clientUUID;
     public long clientId;
 
+    public String deviceModel;
+    public int deviceOS;
+
     public Skin skin;
 
     @Override
@@ -50,6 +53,14 @@ public class LoginPacket extends DataPacket {
         return protocol;
     }
 
+    public int getDeviceOS() {
+        return deviceOS;
+    }
+
+    public String getDeviceModel() {
+        return deviceModel;
+    }
+
     private void decodeChainData() {
         Map<String, List<String>> map = new Gson().fromJson(new String(this.get(getLInt()), StandardCharsets.UTF_8),
                 new TypeToken<Map<String, List<String>>>() {
@@ -73,6 +84,8 @@ public class LoginPacket extends DataPacket {
         if (skinToken.has("ClientRandomId")) this.clientId = skinToken.get("ClientRandomId").getAsLong();
         if (skinToken.has("SkinId")) skinId = skinToken.get("SkinId").getAsString();
         if (skinToken.has("SkinData")) this.skin = new Skin(skinToken.get("SkinData").getAsString(), skinId);
+        if (skinToken.has("DeviceModel")) this.deviceModel = skinToken.get("DeviceModel").getAsString();
+        if (skinToken.has("DeviceOS")) this.deviceOS = skinToken.get("DeviceOS").getAsInt();
     }
 
     private JsonObject decodeToken(String token) {

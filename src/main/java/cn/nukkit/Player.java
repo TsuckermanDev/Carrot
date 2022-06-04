@@ -138,6 +138,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected String iusername;
     protected String displayName;
 
+    protected int protocol;
+
+    protected String deviceModel;
+    protected int deviceOS;
+
     protected int startAction = -1;
 
     protected Vector3 sleeping = null;
@@ -1979,6 +1984,24 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
                     LoginPacket loginPacket = (LoginPacket) packet;
 
+                    PlayStatusPacket statusPacket = new PlayStatusPacket();
+                    statusPacket.status = PlayStatusPacket.LOGIN_SUCCESS;
+                    this.dataPacket(statusPacket);
+
+                    this.username = TextFormat.clean(loginPacket.username);
+                    this.displayName = this.username;
+                    this.setNameTag(this.username);
+                    this.iusername = this.username.toLowerCase();
+                    this.protocol = loginPacket.getProtocol();
+                    this.deviceModel = loginPacket.getDeviceModel();
+                    this.deviceOS = loginPacket.getDeviceOS();
+
+                    this.getServer().getLogger().info("Device: " + this.getDeviceModel());
+
+                    if (this.server.getOnlinePlayers().size() >= this.server.getMaxPlayers() && this.kick(PlayerKickEvent.Reason.SERVER_FULL, "disconnectionScreen.serverFull", false)) {
+                        break;
+                    }
+
                     String message;
                     if (loginPacket.getProtocol() != ProtocolInfo.CURRENT_PROTOCOL) {
                         if (loginPacket.getProtocol() < ProtocolInfo.CURRENT_PROTOCOL) {
@@ -1998,22 +2021,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         break;
                     }
 
-                    this.username = TextFormat.clean(loginPacket.username);
-                    this.displayName = this.username;
-                    this.iusername = this.username.toLowerCase();
-                    this.setDataProperty(new StringEntityData(DATA_NAMETAG, this.username), false);
-
-                    this.loginChainData = ClientChainData.read(loginPacket);
-
-                    if (this.server.getOnlinePlayers().size() >= this.server.getMaxPlayers() && this.kick(PlayerKickEvent.Reason.SERVER_FULL, "disconnectionScreen.serverFull", false)) {
-                        break;
-                    }
-
-                    this.randomClientId = loginPacket.clientId;
-
-                    this.uuid = loginPacket.clientUUID;
-                    this.rawUUID = Binary.writeUUID(this.uuid);
-
                     boolean valid = true;
                     int len = loginPacket.username.length();
                     if (len > 16 || len < 3) {
@@ -2026,7 +2033,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 (c >= 'A' && c <= 'Z') ||
                                 (c >= '0' && c <= '9') ||
                                 c == '_' || c == ' '
-                                ) {
+                        ) {
                             continue;
                         }
 
@@ -2039,6 +2046,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                         break;
                     }
+
+                    this.loginChainData = ClientChainData.read(loginPacket);
+
+                    this.randomClientId = loginPacket.clientId;
+
+                    this.uuid = loginPacket.clientUUID;
+                    this.rawUUID = Binary.writeUUID(this.uuid);
 
                     if (!loginPacket.skin.isValid()) {
                         this.close("", "disconnectionScreen.invalidSkin");
@@ -2055,9 +2069,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         break;
                     }
 
-                    PlayStatusPacket statusPacket = new PlayStatusPacket();
+                    statusPacket = new PlayStatusPacket();
                     statusPacket.status = PlayStatusPacket.LOGIN_SUCCESS;
-                    this.dataPacket(statusPacket);
+                    this.directDataPacket(statusPacket);
 
                     ResourcePacksInfoPacket infoPacket = new ResourcePacksInfoPacket();
                     infoPacket.resourcePackEntries = this.server.getResourcePackManager().getResourceStack();
@@ -2185,11 +2199,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                     MobEquipmentPacket mobEquipmentPacket = (MobEquipmentPacket) packet;
 
-        if (mobEquipmentPacket.windowId == 119) {
-            if(this.offhandInventory != null){
-                this.getTransactionGroup().addTransaction(new BaseTransaction(this.offhandInventory, 0, mobEquipmentPacket.item));
-            }
-        }
+                    if (mobEquipmentPacket.windowId == 119) {
+                        if(this.offhandInventory != null){
+                            this.getTransactionGroup().addTransaction(new BaseTransaction(this.offhandInventory, 0, mobEquipmentPacket.item));
+                        }
+                    }
 
                     this.inventory.setHeldItemIndex(mobEquipmentPacket.selectedSlot, false, mobEquipmentPacket.slot);
                     this.setDataFlag(Player.DATA_FLAGS, Player.DATA_FLAG_ACTION, false);
@@ -3489,6 +3503,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         return false;
+    }
+
+    public String getDeviceModel() {
+        return deviceModel;
+    }
+
+    public int getDeviceOS() {
+        return deviceOS;
     }
 
     @Override
