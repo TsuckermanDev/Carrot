@@ -9,7 +9,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.ChunkException;
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
-
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +37,7 @@ public abstract class BlockEntity extends Position {
     public static final String COMPARATOR = "Comparator";
     public static final String HOPPER = "Hopper";
     public static final String BED = "Bed";
-
+    public static final String SHULKER_BOX = "ShulkerBox";
 
     public static long count = 1;
 
@@ -129,7 +128,9 @@ public abstract class BlockEntity extends Position {
     }
 
     public final String getSaveId() {
-        return shortNames.getOrDefault(this.getClass().getSimpleName(), "");
+        String simpleName = getClass().getName();
+        simpleName = simpleName.substring(22, simpleName.length());
+        return shortNames.getOrDefault(simpleName, "");
     }
 
     public long getId() {
@@ -145,7 +146,7 @@ public abstract class BlockEntity extends Position {
 
     public CompoundTag getCleanedNBT(){
         this.saveNBT();
-        CompoundTag tag = this.namedTag.clone();
+        CompoundTag tag = this.namedTag.copy();
         tag.remove("x").remove("y").remove("z").remove("id");
         if(tag.getTags().size() > 0){
             return tag;

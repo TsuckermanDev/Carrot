@@ -213,7 +213,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         Item raw = this.inventory.getSmelting();
         Item product = this.inventory.getResult();
         FurnaceRecipe smelt = this.server.getCraftingManager().matchFurnaceRecipe(raw);
-        boolean canSmelt = (smelt != null && raw.getCount() > 0 && ((smelt.getResult().deepEquals(product, true) && product.getCount() < product.getMaxStackSize()) || product.getId() == Item.AIR));
+        boolean canSmelt = (smelt != null && raw.getCount() > 0 && ((smelt.getResult().equals(product, true) && product.getCount() < product.getMaxStackSize()) || product.getId() == Item.AIR));
 
         if (burnTime <= 0 && canSmelt && fuel.getFuelTime() != null && fuel.getCount() > 0) {
             this.checkFuel(fuel);

@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.block.*;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityChest;
+import cn.nukkit.blockentity.BlockEntityShulkerBox;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.item.EntityXPOrb;
@@ -1822,10 +1823,10 @@ public class Level implements ChunkManager, Metadatable {
                 breakTime *= 1 - (0.3 * eff.getLevel());
             }
 
-            breakTime -= 0.15;
+            breakTime -= 0.1;
 
             BlockBreakEvent ev = new BlockBreakEvent(player, target, item, player.isCreative(),
-                    (player.lastBreak + breakTime * 1000) > System.currentTimeMillis());
+                    (player.lastBreak + breakTime) > System.currentTimeMillis());
             double distance;
             if (player.isSurvival() && !target.isBreakable(item)) {
                 ev.setCancelled();
@@ -1842,7 +1843,7 @@ public class Level implements ChunkManager, Metadatable {
                 return null;
             }
 
-            if (!ev.getInstaBreak() && ev.isFastBreak()) {
+           if (!ev.getInstaBreak() && ev.isFastBreak()) {
                 return null;
             }
 
@@ -1902,8 +1903,13 @@ public class Level implements ChunkManager, Metadatable {
                 if (player != null && player.getTransactionGroup() != null) {
                     player.getTransactionGroup().execute();
                 }
-
-                ((InventoryHolder) blockEntity).getInventory().dropContents(this, target);
+              if (blockEntity instanceof BlockEntityShulkerBox) {
+                    this.dropItem(target, target.toItem());
+                    } else {
+                    for (Item chestItem : ((InventoryHolder) blockEntity).getInventory().getContents().values()) {
+                    ((InventoryHolder) blockEntity).getInventory().dropContents(this, target);
+                    }
+                }
             }
 
             blockEntity.close();
