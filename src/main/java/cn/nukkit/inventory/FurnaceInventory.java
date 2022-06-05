@@ -9,6 +9,10 @@ import cn.nukkit.item.Item;
  */
 public class FurnaceInventory extends ContainerInventory {
 
+    public final int SMELTING = 0;
+    public final int FUEL = 1;
+    public final int RESULT = 2;
+
     public FurnaceInventory(BlockEntityFurnace furnace) {
         super(furnace, InventoryType.FURNACE);
     }
@@ -19,32 +23,32 @@ public class FurnaceInventory extends ContainerInventory {
     }
 
     public Item getResult() {
-        return this.getItem(2);
+        return this.getItem(RESULT);
     }
 
     public Item getFuel() {
-        return this.getItem(1);
+        return this.getItem(FUEL);
     }
 
     public Item getSmelting() {
-        return this.getItem(0);
+        return this.getItem(SMELTING);
     }
 
     public boolean setResult(Item item) {
-        return this.setItem(2, item);
+        return this.setItem(RESULT, item);
     }
 
     public boolean setFuel(Item item) {
-        return this.setItem(1, item);
+        return this.setItem(FUEL, item);
     }
 
     public boolean setSmelting(Item item) {
-        return this.setItem(0, item);
+        return this.setItem(SMELTING, item);
     }
 
     @Override
-    public void onSlotChange(int index, Item before) {
-        super.onSlotChange(index, before);
+    public void onSlotChange(int index, Item before, boolean send) {
+        super.onSlotChange(index, before, send);
 
         this.getHolder().scheduleUpdate();
     }

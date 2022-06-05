@@ -31,6 +31,8 @@ public interface Inventory {
 
     Item getItem(int index);
 
+    boolean setItem(int index, Item item, boolean send);
+
     boolean setItem(int index, Item item);
 
     Item[] addItem(Item... slots);
@@ -40,6 +42,8 @@ public interface Inventory {
     Item[] removeItem(Item... slots);
 
     Map<Integer, Item> getContents();
+
+    void setContents(Map<Integer, Item> items, boolean send);
 
     void setContents(Map<Integer, Item> items);
 
@@ -67,9 +71,15 @@ public interface Inventory {
 
     int firstEmpty(Item item);
 
+    void remove(Item item, boolean send);
+
     void remove(Item item);
 
+    boolean clear(int index, boolean send);
+
     boolean clear(int index);
+
+    void clearAll(boolean send);
 
     void clearAll();
 
@@ -93,5 +103,5 @@ public interface Inventory {
 
     boolean processSlotChange(Transaction transaction);
 
-    void onSlotChange(int index, Item before);
+    void onSlotChange(int index, Item before, boolean send);
 }

@@ -169,7 +169,7 @@ public class BaseTransaction implements Transaction {
                     source.getFloatingInventory().removeItem(change.getIn());
                 }
             }
-            this.getInventory().setItem(this.getSlot(), this.getTargetItem());
+            this.getInventory().setItem(this.getSlot(), this.getTargetItem(), false);
         }
         return true;
     }

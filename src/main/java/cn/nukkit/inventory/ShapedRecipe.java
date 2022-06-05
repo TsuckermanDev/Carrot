@@ -1,12 +1,10 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Server;
+import cn.nukkit.block.BlockIds;
 import cn.nukkit.item.Item;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * author: MagicDroidX
@@ -82,6 +80,7 @@ public class ShapedRecipe implements Recipe {
             throw new RuntimeException("Symbol does not appear in the shape: " + key);
         }
 
+        item.setCount(1);
         this.fixRecipe(key, item);
 
         return this;
@@ -114,6 +113,23 @@ public class ShapedRecipe implements Recipe {
 
         return ingredients;
     }
+
+    public List<Item> getIngredientList() {
+        List<Item> ingredients = new ArrayList<>();
+        for (int y : this.ingredients.keySet()) {
+            Map<Integer, Item> row = this.ingredients.get(y);
+            for (int x : row.keySet()) {
+                Item ingredient = row.get(x);
+                if (ingredient != null) {
+                    if (ingredient.getId() != BlockIds.AIR) {
+                        ingredients.add(ingredient.clone());
+                    }
+                }
+            }
+        }
+        return ingredients;
+    }
+
 
     public Item getIngredient(int x, int y) {
         if (this.ingredients.containsKey(y)) {

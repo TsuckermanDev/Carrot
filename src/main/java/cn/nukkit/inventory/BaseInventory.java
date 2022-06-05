@@ -20,7 +20,7 @@ import java.util.*;
  * author: MagicDroidX
  * Nukkit Project
  */
-public abstract class BaseInventory implements Inventory {
+public abstract class BaseInventory implements Cloneable, Inventory {
 
     protected final InventoryType type;
 
@@ -118,7 +118,7 @@ public abstract class BaseInventory implements Inventory {
     }
 
     @Override
-    public void setContents(Map<Integer, Item> items) {
+    public void setContents(Map<Integer, Item> items, boolean send) {
         if (items.size() > this.size) {
             TreeMap<Integer, Item> newItems = new TreeMap<>();
             for (Map.Entry<Integer, Item> entry : items.entrySet()) {
@@ -140,11 +140,11 @@ public abstract class BaseInventory implements Inventory {
         for (int i = 0; i < this.size; ++i) {
             if (!items.containsKey(i)) {
                 if (this.slots.containsKey(i)) {
-                    this.clear(i);
+                    this.clear(i, send);
                 }
             } else {
                 if (!this.setItem(i, items.get(i))) {
-                    this.clear(i);
+                    this.clear(i, send);
                 }
             }
         }
@@ -153,7 +153,12 @@ public abstract class BaseInventory implements Inventory {
     }
 
     @Override
-    public boolean setItem(int index, Item item) {
+    public void setContents(Map<Integer, Item> items) {
+        this.setContents(items, true);
+    }
+
+    @Override
+    public boolean setItem(int index, Item item, boolean send) {
         item = item.clone();
         if (index < 0 || index >= this.size) {
             return false;
@@ -175,9 +180,14 @@ public abstract class BaseInventory implements Inventory {
 
         Item old = this.getItem(index);
         this.slots.put(index, item.clone());
-        this.onSlotChange(index, old);
+        this.onSlotChange(index, old, send);
 
         return true;
+    }
+
+    @Override
+    public boolean setItem(int index, Item item) {
+        return this.setItem(index, item, true);
     }
 
     @Override
@@ -226,7 +236,7 @@ public abstract class BaseInventory implements Inventory {
     }
 
     @Override
-    public void remove(Item item) {
+    public void remove(Item item, boolean send) {
         boolean checkDamage = item.hasMeta();
         boolean checkTag = item.getCompoundTag() != null;
         for (Map.Entry<Integer, Item> entry : this.getContents().entrySet()) {
@@ -234,6 +244,11 @@ public abstract class BaseInventory implements Inventory {
                 this.clear(entry.getKey());
             }
         }
+    }
+
+    @Override
+    public void remove(Item item) {
+        this.remove(item, true);
     }
 
     @Override
@@ -376,7 +391,7 @@ public abstract class BaseInventory implements Inventory {
     }
 
     @Override
-    public boolean clear(int index) {
+    public boolean clear(int index, boolean send) {
         if (this.slots.containsKey(index)) {
             Item item = new ItemBlock(new BlockAir(), null, 0);
             Item old = this.slots.get(index);
@@ -397,17 +412,27 @@ public abstract class BaseInventory implements Inventory {
                 this.slots.remove(index);
             }
 
-            this.onSlotChange(index, old);
+            this.onSlotChange(index, old, send);
         }
 
         return true;
     }
 
     @Override
-    public void clearAll() {
+    public boolean clear(int index) {
+        return this.clear(index, true);
+    }
+
+    @Override
+    public void clearAll(boolean send) {
         for (Integer index : this.getContents().keySet()) {
-            this.clear(index);
+            this.clear(index, send);
         }
+    }
+
+    @Override
+    public void clearAll() {
+        this.clearAll(true);
     }
 
     @Override
@@ -465,8 +490,10 @@ public abstract class BaseInventory implements Inventory {
     }
 
     @Override
-    public void onSlotChange(int index, Item before) {
-        this.sendSlot(index, this.getViewers());
+    public void onSlotChange(int index, Item before, boolean send) {
+        if (send) {
+            this.sendSlot(index, this.getViewers());
+        }
     }
 
     @Override
@@ -577,5 +604,14 @@ public abstract class BaseInventory implements Inventory {
     @Override
     public InventoryType getType() {
         return type;
+    }
+
+    @Override
+    public BaseInventory clone() {
+        try {
+            return (BaseInventory) super.clone();
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
     }
 }

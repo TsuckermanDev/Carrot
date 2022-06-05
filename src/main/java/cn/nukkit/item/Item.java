@@ -1412,6 +1412,10 @@ public class Item implements Cloneable, BlockIds, ItemIds {
         }
     }
 
+    public boolean hasAnyDamageValue() {
+        return this.meta == -1;
+    }
+
     public int getMaxStackSize() {
         return 64;
     }

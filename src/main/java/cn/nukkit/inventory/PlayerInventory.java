@@ -37,10 +37,6 @@ public class PlayerInventory extends BaseInventory {
         for (int i = 0; i < this.hotbar.length; i++) {
             this.hotbar[i] = i;
         }
-
-        if (contents != null) {
-
-        }
     }
 
     public PlayerInventory(EntityHumanType player) {
@@ -196,13 +192,13 @@ public class PlayerInventory extends BaseInventory {
     }
 
     @Override
-    public void onSlotChange(int index, Item before) {
+    public void onSlotChange(int index, Item before, boolean send) {
         EntityHuman holder = this.getHolder();
         if (holder instanceof Player && !((Player) holder).spawned) {
             return;
         }
 
-        super.onSlotChange(index, before);
+        super.onSlotChange(index, before, send);
         if (index == this.itemInHandIndex) {
             this.sendHeldItem(this.getHolder().getViewers());
             this.sendHeldItem((Player) this.getHolder());
@@ -257,11 +253,11 @@ public class PlayerInventory extends BaseInventory {
     }
 
     @Override
-    public boolean setItem(int index, Item item) {
+    public boolean setItem(int index, Item item, boolean send) {
         if (index < 0 || index >= this.size) {
             return false;
         } else if (item.getId() == 0 || item.getCount() <= 0) {
-            return this.clear(index);
+            return this.clear(index, send);
         }
 
         //Armor change
@@ -285,13 +281,18 @@ public class PlayerInventory extends BaseInventory {
 
         Item old = this.getItem(index);
         this.slots.put(index, item.clone());
-        this.onSlotChange(index, old);
+        this.onSlotChange(index, old, send);
 
         return true;
     }
 
     @Override
-    public boolean clear(int index) {
+    public boolean setItem(int index, Item item) {
+        return this.setItem(index, item, true);
+    }
+
+    @Override
+    public boolean clear(int index, boolean send) {
         if (this.slots.containsKey(index)) {
             Item item = new ItemBlock(new BlockAir(), null, 0);
             Item old = this.slots.get(index);
@@ -327,10 +328,15 @@ public class PlayerInventory extends BaseInventory {
                 this.slots.remove(index);
             }
 
-            this.onSlotChange(index, old);
+            this.onSlotChange(index, old, send);
         }
 
         return true;
+    }
+
+    @Override
+    public boolean clear(int index) {
+        return this.clear(index, true);
     }
 
     public Item[] getArmorContents() {
@@ -343,16 +349,21 @@ public class PlayerInventory extends BaseInventory {
     }
 
     @Override
-    public void clearAll() {
+    public void clearAll(boolean send) {
         int limit = this.getSize() + 4;
         for (int index = 0; index < limit; ++index) {
-            this.clear(index);
+            this.clear(index, send);
         }
         this.hotbar = new int[this.getHotbarSize()];
         for (int i = 0; i < this.hotbar.length; i++) {
             this.hotbar[i] = i;
         }
         this.sendContents(this.getViewers());
+    }
+
+    @Override
+    public void clearAll() {
+        this.clearAll(true);
     }
 
     public void sendArmorContents(Player player) {
