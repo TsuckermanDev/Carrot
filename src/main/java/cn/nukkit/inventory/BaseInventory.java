@@ -8,6 +8,8 @@ import cn.nukkit.event.entity.EntityInventoryChangeEvent;
 import cn.nukkit.event.inventory.InventoryOpenEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
+import cn.nukkit.level.Level;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.ContainerSetContentPacket;
 import cn.nukkit.network.protocol.ContainerSetSlotPacket;
 import org.apache.commons.lang3.ArrayUtils;
@@ -70,6 +72,15 @@ public abstract class BaseInventory implements Inventory {
         if (!(this instanceof DoubleChestInventory)) {
             this.setContents(items);
         }
+    }
+
+    @Override
+    public void dropContents(Level level, Vector3 position) {
+        this.getContents().forEach((integer, item) -> {
+            level.dropItem(position, item);
+        });
+
+        this.clearAll();
     }
 
     @Override

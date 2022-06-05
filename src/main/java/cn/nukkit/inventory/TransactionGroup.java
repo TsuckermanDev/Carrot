@@ -1,5 +1,7 @@
 package cn.nukkit.inventory;
 
+import cn.nukkit.utils.queue.Queue;
+
 import java.util.Set;
 
 /**
@@ -12,7 +14,7 @@ public interface TransactionGroup {
 
     Set<Inventory> getInventories();
 
-    Transaction[] getTransactions();
+    Queue<Transaction> getTransactions();
 
     int getTransactionCount();
 

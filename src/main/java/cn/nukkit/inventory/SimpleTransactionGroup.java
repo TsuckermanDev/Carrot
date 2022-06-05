@@ -3,9 +3,9 @@ package cn.nukkit.inventory;
 import cn.nukkit.Player;
 import cn.nukkit.event.inventory.InventoryClickEvent;
 import cn.nukkit.event.inventory.InventoryTransactionEvent;
-import org.apache.commons.lang3.ArrayUtils;
+import cn.nukkit.utils.queue.Queue;
+import cn.nukkit.utils.queue.QueueArray;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,8 +17,8 @@ public class SimpleTransactionGroup implements TransactionGroup {
 
     protected Player player;
 
-    protected Transaction[] transactionQueue = new Transaction[]{};
-    protected Transaction[] transactionsToRetry = new Transaction[]{};
+    protected Queue<Transaction> transactionQueue = new QueueArray<>();
+    protected Queue<Transaction> transactionsToRetry = new QueueArray<>();
 
     protected final Set<Inventory> inventories = new HashSet<>();
 
@@ -40,7 +40,7 @@ public class SimpleTransactionGroup implements TransactionGroup {
     }
 
     @Override
-    public Transaction[] getTransactions() {
+    public Queue<Transaction> getTransactions() {
         return transactionQueue;
     }
 
@@ -51,7 +51,7 @@ public class SimpleTransactionGroup implements TransactionGroup {
 
     @Override
     public void addTransaction(Transaction transaction) {
-        this.transactionQueue = ArrayUtils.add(this.transactionQueue, transaction);
+        this.transactionQueue.enqueue(transaction);
         if (transaction.getInventory() != null) {
             this.inventories.add(transaction.getInventory());
         }
@@ -64,53 +64,48 @@ public class SimpleTransactionGroup implements TransactionGroup {
     public boolean execute() {
         Set<Transaction> failed = new HashSet<>();
 
-        if (!ArrayUtils.isEmpty(this.transactionsToRetry)) {
-            ArrayUtils.reverse(this.transactionsToRetry);
-            this.transactionQueue = ArrayUtils.addAll(this.transactionQueue, this.transactionsToRetry);
-            this.transactionsToRetry = new Transaction[]{};
+        while (!this.transactionsToRetry.isEmpty()) {
+            this.transactionQueue.enqueue(this.transactionsToRetry.dequeue());
         }
 
         InventoryTransactionEvent transactionEvent = new InventoryTransactionEvent(this);
-        if (!ArrayUtils.isEmpty(this.transactionQueue)) {
+        if (!this.transactionQueue.isEmpty()) {
             this.player.getServer().getPluginManager().callEvent(transactionEvent);
         } else {
             return false;
         }
 
-        if (!ArrayUtils.isEmpty(this.transactionQueue)) {
-            ArrayUtils.reverse(this.transactionQueue);
-            for (Transaction transaction : this.transactionQueue) {
-                if (transaction.getInventory() instanceof ContainerInventory || transaction.getInventory() instanceof PlayerInventory) {
-                    InventoryClickEvent clickEvent = new InventoryClickEvent(transaction.getInventory(), this.player, transaction.getSlot(), transaction.getInventory().getItem(transaction.getSlot()));
-                    this.player.getServer().getPluginManager().callEvent(clickEvent);
+        while (!this.transactionQueue.isEmpty()) {
+            Transaction transaction = this.transactionQueue.dequeue();
+            if (transaction.getInventory() instanceof ContainerInventory || transaction.getInventory() instanceof PlayerInventory) {
+                InventoryClickEvent clickEvent = new InventoryClickEvent(transaction.getInventory(), this.player, transaction.getSlot(), transaction.getInventory().getItem(transaction.getSlot()));
+                this.player.getServer().getPluginManager().callEvent(clickEvent);
 
-                    if (clickEvent.isCancelled()) {
-                        transactionEvent.setCancelled(true);
-                    }
+                if (clickEvent.isCancelled()) {
+                    transactionEvent.setCancelled(true);
                 }
+            }
 
-                if (transactionEvent.isCancelled()) {
-                    this.transactionCount -= 1;
-                    transaction.sendSlotUpdate(this.player);
-                    this.inventories.remove(transaction.getInventory());
-                    continue;
-                } else if (!transaction.execute(this.player)) {
-                    transaction.addFailure();
-                    if (transaction.getFailures() >= DEFAULT_ALLOWED_RETRIES) {
-                        this.transactionCount -= 1;
-                        failed.add(transaction);
-                    } else {
-                        this.transactionsToRetry = ArrayUtils.add(this.transactionsToRetry, transaction);
-                    }
-                    continue;
-                }
-
+            if (transactionEvent.isCancelled()) {
                 this.transactionCount -= 1;
-                transaction.setSuccess();
                 transaction.sendSlotUpdate(this.player);
                 this.inventories.remove(transaction.getInventory());
+                continue;
+            } else if (!transaction.execute(this.player)) {
+                transaction.addFailure();
+                if (transaction.getFailures() >= DEFAULT_ALLOWED_RETRIES) {
+                    this.transactionCount -= 1;
+                    failed.add(transaction);
+                } else {
+                    this.transactionsToRetry.enqueue(transaction);
+                }
+                continue;
             }
-            this.transactionQueue = new Transaction[]{};
+
+            this.transactionCount -= 1;
+            transaction.setSuccess();
+            transaction.sendSlotUpdate(this.player);
+            this.inventories.remove(transaction.getInventory());
         }
 
         for (Transaction fail : failed) {

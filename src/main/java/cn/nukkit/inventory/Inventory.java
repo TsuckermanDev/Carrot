@@ -2,6 +2,8 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.Level;
+import cn.nukkit.math.Vector3;
 
 import java.util.Collection;
 import java.util.Map;
@@ -14,6 +16,8 @@ import java.util.Set;
 public interface Inventory {
 
     int MAX_STACK = 64;
+
+    void dropContents(Level level, Vector3 position);
 
     int getSize();
 
