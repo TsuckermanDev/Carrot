@@ -1380,6 +1380,10 @@ public class Item implements Cloneable, BlockIds, ItemIds {
         this.count = count;
     }
 
+    public boolean isNull() {
+        return this.count <= 0 || this.id == AIR;
+    }
+
     final public String getName() {
         return this.hasCustomName() ? this.getCustomName() : this.name;
     }
