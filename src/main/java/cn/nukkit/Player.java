@@ -3396,7 +3396,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     SetPlayerGameTypePacket setPlayerGameTypePacket = (SetPlayerGameTypePacket) packet;
                     if (setPlayerGameTypePacket.gamemode != this.gamemode) {
                         this.sendGamemode();
-                        this.sendSettings();
+                        this.getAdventureSettings().update();
                     }
                     break;
                 case ProtocolInfo.ITEM_FRAME_DROP_ITEM_PACKET:
